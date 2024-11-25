@@ -1,0 +1,17 @@
+services:
+  ndiff:
+    image: docker.io/dockervitomu/unisatd:ndiff-v0.0.9
+    volumes:
+      - ./config/config.yaml:/data/config.yaml
+      - ./result:/data/result
+    environment:
+      START_HEIGHT: 21000
+      END_HEIGHT: 200000
+      STEP: 50
+      DIFF_RESULT_FILE_LOCATION: /data/result
+    labels:
+      - "name=ndiff"
+    logging:
+      driver: "json-file"
+      options:
+        labels: "name"
