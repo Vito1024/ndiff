@@ -2,7 +2,7 @@ package diff
 
 const sqlOldSelectNFTByHeightRange = `
 SELECT
-	lower(hex(reverse(txid))) as txid, height, nftidx, nfttype
+	lower(hex(reverse(txid))) as txid, height, nftidx, nfttype, nftnumber
 FROM
 	blknft_height
 WHERE
@@ -12,7 +12,7 @@ WHERE
 
 const sqlNewSelectNFTByHeightRange = `
 SELECT
-	lower(hex(reverse(txid))) as txid, height, nftidx, nfttype
+	lower(hex(reverse(txid))) as txid, height, nftidx, nfttype, nftnumber
 FROM
 	blknft_height
 WHERE

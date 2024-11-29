@@ -1,10 +1,11 @@
 package diff
 
 type NFT struct {
-	TxId    string
-	Height  uint32
-	NFTIdx  uint64
-	NFTType uint8
+	TxId      string
+	Height    uint32
+	NFTIdx    uint64
+	NFTType   uint8
+	NFTNumber int64
 }
 
 type NFTsForDiff struct {

@@ -51,7 +51,7 @@ func New(old *clickhouse.DB, new *clickhouse.DB, tracker ndiff.Tracker) *Service
 			svc.tracker.Fatal(tag, "failed to create diff result file `not_in_new.csv`", ndiff.ErrorTag(err))
 		}
 		svc.notInNew = csv.NewWriter(notInNewFile)
-		err = svc.notInNew.Write([]string{"txid", "nft_type", "height", "nft_idx"})
+		err = svc.notInNew.Write([]string{"txid", "nft_type", "height", "nft_idx", "nft_number"})
 		if err != nil {
 			svc.tracker.Fatal(tag, "failed to write header to diff result file `not_in_new.csv`", ndiff.ErrorTag(err))
 		}
@@ -73,7 +73,7 @@ func New(old *clickhouse.DB, new *clickhouse.DB, tracker ndiff.Tracker) *Service
 			svc.tracker.Fatal(tag, "failed to create diff result file `not_in_old.csv`", ndiff.ErrorTag(err))
 		}
 		svc.notInOld = csv.NewWriter(notInOldFile)
-		err = svc.notInOld.Write([]string{"txid", "nft_type", "height", "nft_idx"})
+		err = svc.notInOld.Write([]string{"txid", "nft_type", "height", "nft_idx", "nft_number"})
 		if err != nil {
 			svc.tracker.Fatal(tag, "failed to write header to diff result file `not_in_old.csv`", ndiff.ErrorTag(err))
 		}
@@ -175,13 +175,13 @@ func (svc *Service) saveDiffResult(in <-chan DiffResult) {
 
 	for diffResult := range in {
 		for _, nft := range diffResult.NotInNew {
-			err := svc.notInNew.Write([]string{nft.TxId, fmt.Sprintf("%d", nft.NFTType), fmt.Sprintf("%d", nft.Height), fmt.Sprintf("%d", nft.NFTIdx)})
+			err := svc.notInNew.Write([]string{nft.TxId, fmt.Sprintf("%d", nft.NFTType), fmt.Sprintf("%d", nft.Height), fmt.Sprintf("%d", nft.NFTIdx), fmt.Sprintf("%d", nft.NFTNumber)})
 			if err != nil {
 				svc.tracker.Fatal(tag, "failed to write diff result to `not_in_new.csv`", ndiff.ErrorTag(err), ndiff.NewTag("nft", nft))
 			}
 		}
 		for _, nft := range diffResult.NotInOld {
-			err := svc.notInOld.Write([]string{nft.TxId, fmt.Sprintf("%d", nft.NFTType), fmt.Sprintf("%d", nft.Height), fmt.Sprintf("%d", nft.NFTIdx)})
+			err := svc.notInOld.Write([]string{nft.TxId, fmt.Sprintf("%d", nft.NFTType), fmt.Sprintf("%d", nft.Height), fmt.Sprintf("%d", nft.NFTIdx), fmt.Sprintf("%d", nft.NFTNumber)})
 			if err != nil {
 				svc.tracker.Fatal(tag, "failed to write diff result to `not_in_old.csv`", ndiff.ErrorTag(err), ndiff.NewTag("nft", nft))
 			}
@@ -213,7 +213,7 @@ func (svc *Service) fetchNFTs(ctx context.Context, startHeight uint64) NFTsForDi
 		nfts := make(map[string]NFT, 72000)
 		for rows.Next() {
 			var nft NFT
-			if err := rows.Scan(&nft.TxId, &nft.Height, &nft.NFTIdx, &nft.NFTType); err != nil {
+			if err := rows.Scan(&nft.TxId, &nft.Height, &nft.NFTIdx, &nft.NFTType, &nft.NFTNumber); err != nil {
 				svc.tracker.Fatal(tag, "failed to scan nft", ndiff.ErrorTag(err), ndiff.NewTag("start_height", startHeight), ndiff.NewTag("db", db.Name()))
 				return nil, err
 			}
